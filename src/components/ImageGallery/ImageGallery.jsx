@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { ImageGalleryList } from './ImageGallery.styled';
-import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
+import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
 import { getImages } from 'services/api';
 import { Loader } from 'components/Loader/Loader';
 import { Button } from '../Button/Button';
@@ -9,12 +9,11 @@ function smoothScroll() {
   const cardHeight = document
     .querySelector('ul')
     .firstElementChild.getBoundingClientRect().height;
-  console.log('1');
+
   window.scrollBy({
     top: cardHeight * 2,
     behavior: 'smooth',
   });
-  console.log('2');
 }
 
 export class ImageGallery extends Component {
@@ -32,6 +31,7 @@ export class ImageGallery extends Component {
     const nextQuery = this.props.query;
     const prevPage = prevState.page;
     const nextPage = this.state.page;
+    const { images, visibleBtn, totalHits } = this.state;
 
     if (prevQuery !== nextQuery) {
       this.setState({ images: [], page: 1 });
@@ -40,11 +40,14 @@ export class ImageGallery extends Component {
     if (prevQuery !== nextQuery || prevPage !== nextPage) {
       try {
         this.setState({ isLoading: true });
-        const images = await getImages(nextQuery, nextPage);
+        const imageList = await getImages(nextQuery, nextPage);
+        if (imageList.totalHits === 0) {
+          alert('Images not found');
+        }
         this.setState(state => ({
-          images: [...state.images, ...images.hits],
+          images: [...state.images, ...imageList.hits],
           isLoading: false,
-          totalHits: images.totalHits,
+          totalHits: imageList.totalHits,
         }));
       } catch (error) {
         this.setState({ error: true, isLoading: false });
@@ -52,20 +55,13 @@ export class ImageGallery extends Component {
       }
     }
 
-    if (
-      this.state.images.length !== 0 &&
-      !this.state.visibleBtn &&
-      this.state.images.length < this.state.totalHits
-    ) {
+    if (images.length !== 0 && !visibleBtn && images.length < totalHits) {
       this.setState({ visibleBtn: true });
-    } else if (
-      this.state.images.length >= this.state.totalHits &&
-      this.state.visibleBtn
-    ) {
+    } else if (images.length >= totalHits && visibleBtn) {
       this.setState({ visibleBtn: false });
     }
 
-    if (prevPage !== nextPage) {
+    if (prevPage !== nextPage && nextPage !== 1) {
       setTimeout(() => {
         smoothScroll();
       }, 0);
@@ -79,11 +75,13 @@ export class ImageGallery extends Component {
   };
 
   render() {
+    const { images, isLoading, visibleBtn } = this.state;
+
     return (
       <>
         <ImageGalleryList>
           {/* {this.state.images.length === 0 && <div>Images nod found</div>} */}
-          {this.state.images.map(image => (
+          {images.map(image => (
             <ImageGalleryItem
               image={image}
               // webformatURL={image.webformatURL}
@@ -91,8 +89,8 @@ export class ImageGallery extends Component {
             />
           ))}
         </ImageGalleryList>
-        {this.state.isLoading && <Loader />}
-        {this.state.visibleBtn && <Button onClick={this.onClickLoadMoreBtn} />}
+        {isLoading && <Loader />}
+        {visibleBtn && <Button onClick={this.onClickLoadMoreBtn} />}
       </>
     );
   }
