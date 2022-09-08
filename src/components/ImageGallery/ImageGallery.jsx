@@ -5,6 +5,18 @@ import { getImages } from 'services/api';
 import { Loader } from 'components/Loader/Loader';
 import { Button } from '../Button/Button';
 
+function smoothScroll() {
+  const cardHeight = document
+    .querySelector('ul')
+    .firstElementChild.getBoundingClientRect().height;
+  console.log('1');
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
+  console.log('2');
+}
+
 export class ImageGallery extends Component {
   state = {
     images: [],
@@ -52,6 +64,12 @@ export class ImageGallery extends Component {
     ) {
       this.setState({ visibleBtn: false });
     }
+
+    if (prevPage !== nextPage) {
+      setTimeout(() => {
+        smoothScroll();
+      }, 0);
+    }
   }
 
   onClickLoadMoreBtn = () => {
@@ -68,7 +86,7 @@ export class ImageGallery extends Component {
           {this.state.images.map(image => (
             <ImageGalleryItem
               image={image}
-              webformatURL={image.webformatURL}
+              // webformatURL={image.webformatURL}
               key={image.id}
             />
           ))}

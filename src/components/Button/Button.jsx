@@ -1,3 +1,9 @@
+import { ButtonEl, ButtonBox } from './Button.styled';
+
 export const Button = ({ onClick }) => {
-  return <button onClick={onClick}>Load More</button>;
+  return (
+    <ButtonBox>
+      <ButtonEl onClick={onClick}>Load More</ButtonEl>
+    </ButtonBox>
+  );
 };
