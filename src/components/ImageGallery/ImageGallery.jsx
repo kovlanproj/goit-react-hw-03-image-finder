@@ -19,6 +19,7 @@ function smoothScroll() {
 
 export class ImageGallery extends Component {
     state = {
+        query: '',
         images: [],
         totalHits: 0,
         isLoading: false,
@@ -28,19 +29,29 @@ export class ImageGallery extends Component {
     };
 
     async componentDidUpdate(prevProps, prevState) {
-        const prevQuery = prevProps.query;
-        const nextQuery = this.props.query;
+        const prevQuery = prevProps.formQuery;
+        const nextQuery = this.props.formQuery;
         const prevPage = prevState.page;
         const nextPage = this.state.page;
-        const { images, visibleBtn, totalHits } = this.state;
+        const { images, visibleBtn, totalHits, query } = this.state;
+        const prevStateQuery = prevState.query;
 
         if (prevQuery !== nextQuery) {
-            this.setState({ images: [], page: 1 });
+            this.setState(prev => ({
+                ...prev,
+                images: [],
+                page: 1,
+                query: this.props.formQuery,
+            }));
         }
 
-        if (prevQuery !== nextQuery || prevPage !== nextPage) {
+        if (
+            prevStateQuery !== query ||
+            (prevPage !== nextPage && nextPage !== 1)
+        ) {
             try {
                 this.setState({ isLoading: true });
+                console.log('query -', nextQuery, '   page - ', nextPage);
                 const imageList = await getImages(nextQuery, nextPage);
                 if (imageList.totalHits === 0) {
                     alert('Images not found');
@@ -93,5 +104,5 @@ export class ImageGallery extends Component {
 }
 
 ImageGallery.propTypes = {
-    query: PropTypes.string.isRequired,
+    formQuery: PropTypes.string.isRequired,
 };

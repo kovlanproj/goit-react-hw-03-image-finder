@@ -3,20 +3,20 @@ import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 
 export class App extends Component {
-  state = {
-    query: '',
-  };
+    state = {
+        query: '',
+    };
 
-  onSubmit = query => {
-    this.setState({ query });
-  };
+    onSubmit = query => {
+        this.setState({ query });
+    };
 
-  render() {
-    return (
-      <div>
-        <Searchbar onSubmit={this.onSubmit} />
-        <ImageGallery query={this.state.query} />
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div>
+                <Searchbar onSubmit={this.onSubmit} />
+                <ImageGallery formQuery={this.state.query} />
+            </div>
+        );
+    }
 }
