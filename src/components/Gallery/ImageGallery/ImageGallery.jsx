@@ -4,7 +4,7 @@ import { ImageGalleryList } from './ImageGallery.styled';
 import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
 import { getImages } from 'services/api';
 import { Loader } from 'components/Loader/Loader';
-import { Button } from '../Button/Button';
+import { Button } from '../../Button/Button';
 
 function smoothScroll() {
     const cardHeight = document
